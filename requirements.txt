@@ -1,0 +1,21 @@
+# core
+Flask==3.0.2
+Flask-Login==0.6.3
+Flask-SQLAlchemy==3.1.1
+gunicorn==21.2.0
+psycopg2-binary==2.9.9
+python-dotenv==1.0.1
+
+# data stack (compatible set)
+pandas==2.2.2
+numpy==1.26.4           # <— required for ydata-profiling 4.8.3 and SciPy 1.13.x
+openpyxl==3.1.5
+# only if you need old .xls files:
+# xlrd==2.0.1
+
+# profiling
+ydata-profiling==4.8.3
+
+# forms & validation
+Flask-WTF==1.2.1
+email-validator==2.2.0
