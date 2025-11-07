@@ -114,7 +114,6 @@ import pandas as pd
 
 RARE_CAT_PCT = 1.0  # used in the footnote text
 
-
 def df_to_html_table(df: pd.DataFrame, index: bool = False) -> str:
     """Render a dataframe using the .tbl style used in the standalone report."""
     if df is None or (isinstance(df, pd.DataFrame) and df.empty):
@@ -134,92 +133,3 @@ def build_quality_html(
     label_issues_df: pd.DataFrame,
 ) -> str:
     """Return a complete HTML document (string) that matches the style you sent."""
-
-from html import escape
-from pathlib import Path
-import pandas as pd
-
-RARE_CAT_PCT = 1.0  # used in the footnote text
-
-def df_to_html_table(df: pd.DataFrame, index: bool = False) -> str:
-    """Render a dataframe using the .tbl style used in the standalone report."""
-    if df is None or (isinstance(df, pd.DataFrame) and df.empty):
-        df = pd.DataFrame({"Info": ["No rows."]})
-    return df.to_html(classes="tbl", border=0, index=index, escape=False)
-
-def build_quality_html(name, profile_path, overview,
-                       missing_df, dup_summary_df,
-                       dup_groups_df, out_counts_df,
-                       out_rows_df, label_issues_df,
-                       RARE_CAT_PCT=1.0):
-    """Return a complete HTML document (string) for the quality report."""
-
-    def df_to_html_table(df, index=True):
-        try:
-            return df.to_html(classes="tbl", border=0, index=index)
-        except Exception:
-            return "<p class='note'>(No data)</p>"
-
-    html = f"""<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<title>{escape(name)} — Enhanced Data Quality Report</title>
-<style>
-/* your CSS as before */
-</style>
-</head>
-
-<body>
-  <div class="header-bar">
-    <div class="header-left">
-      <div class="logo">🔷 Crystal LAB</div>
-      <div class="file-info">
-        <div class="filename">{escape(name)}</div>
-        <div class="subtitle">Data Profile Report</div>
-      </div>
-    </div>
-    <div class="header-right">
-      <div class="user">Haifa Moha</div>
-      <button class="quality-btn">⚠️ Quality issues</button>
-    </div>
-  </div>
-
-  <div class="content">
-    <h1>{escape(name)} — Enhanced Data Quality Report</h1>
-    <p>
-      <a class="report-link" href="{escape(profile_path)}" target="_blank">Open ydata_profiling dashboard</a>
-      <span class="badge">HTML</span>
-    </p>
-    <div class="hr"></div>
-
-    <h2>Overview</h2>
-    <p class="note">Rows: {overview.get('rows','-')} &nbsp;&nbsp; Columns: {overview.get('cols','-')}</p>
-
-    <h2>1) Missing Values</h2>
-    {df_to_html_table(missing_df)}
-
-    <h2>2) Duplicate Rows</h2>
-    <h3>Summary</h3>
-    {df_to_html_table(dup_summary_df, index=False)}
-    <h3>Largest Duplicate Groups</h3>
-    {df_to_html_table(dup_groups_df, index=False)}
-
-    <h2>3) Outliers</h2>
-    <h3>Per-column Outlier Counts</h3>
-    {df_to_html_table(out_counts_df)}
-    <h3>Rows Flagged as Outliers (any column)</h3>
-    {df_to_html_table(out_rows_df, index=True)}
-
-    <h2>4) Labeling Issues (Categorical Heuristics)</h2>
-    {df_to_html_table(label_issues_df, index=False)}
-
-    <div class="hr"></div>
-    <p class="note">
-      Notes: Outliers use IQR for numeric columns and top/bottom 1% tails for datetimes.
-      Labeling issues include case/whitespace variants, stray spaces, mixed types, and very rare categories (&lt; {RARE_CAT_PCT}%).
-    </p>
-  </div>
-</body>
-</html>"""
-    return html
